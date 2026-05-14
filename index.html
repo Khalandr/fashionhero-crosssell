@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FashionHero — Sukienka Maxi Boho (prototyp Dobierz do tego)</title>
+<style>
+  :root {
+    --bg: #FAFAF7;
+    --ink: #1A1A1F;
+    --ink-muted: #5C5C66;
+    --accent: #1F2940;
+    --accent-2: #B8956A;
+    --line: #E6E4DC;
+    --card: #FFFFFF;
+    --radius: 6px;
+    --shadow: 0 1px 2px rgba(26,26,31,.04), 0 8px 32px rgba(26,26,31,.05);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* nav (mirror of FashionHero shell) */
+  nav.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--line);
+    background: white;
+  }
+  .brand { font-weight: 700; letter-spacing: 0.5px; font-size: 18px; }
+  nav.top .links { display: flex; gap: 28px; font-size: 14px; color: var(--ink-muted); }
+  nav.top .links a { text-decoration: none; }
+  nav.top .icons { display: flex; gap: 18px; color: var(--ink-muted); font-size: 18px; }
+
+  /* breadcrumb */
+  .crumbs {
+    padding: 16px 24px 0;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .crumbs a { text-decoration: none; }
+
+  /* product page */
+  .product {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 48px;
+    padding: 32px 24px;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .photo {
+    aspect-ratio: 3/4;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #C9B79C 0%, #9C8268 50%, #6B5440 100%);
+    position: relative;
+    color: white;
+    overflow: hidden;
+  }
+  .photo .label {
+    position: absolute;
+    bottom: 14px; left: 14px;
+    font-size: 11px;
+    background: rgba(0,0,0,.35);
+    padding: 4px 9px;
+    border-radius: 100px;
+    letter-spacing: 0.8px;
+    backdrop-filter: blur(4px);
+  }
+  .photo:nth-child(2) {
+    background: linear-gradient(135deg, #D2C2A8 0%, #A99176 60%, #7B6044 100%);
+  }
+  .photo:nth-child(3) {
+    background: linear-gradient(160deg, #8F7355 0%, #6A4F32 100%);
+  }
+  .photo:nth-child(4) {
+    background: linear-gradient(135deg, #EFE7DA 0%, #C9BBA5 80%);
+    color: #5C4830;
+  }
+
+  /* product info side */
+  .info h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    letter-spacing: -0.5px;
+  }
+  .info .designer {
+    color: var(--ink-muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .info .price {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 18px 0 6px;
+  }
+  .info .vat-note {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin-bottom: 24px;
+  }
+  .swatch {
+    display: flex; gap: 8px; margin: 20px 0 8px;
+  }
+  .swatch .dot {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px var(--line);
+    cursor: pointer;
+  }
+  .swatch .dot.selected { box-shadow: 0 0 0 2px var(--accent); }
+  .swatch-label { font-size: 13px; color: var(--ink-muted); margin-bottom: 12px; }
+
+  .sizes {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin: 12px 0 8px;
+  }
+  .size {
+    border: 1px solid var(--line);
+    padding: 10px 0;
+    text-align: center;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 14px;
+    background: white;
+  }
+  .size:hover { border-color: var(--accent); }
+  .size.selected { background: var(--accent); color: white; border-color: var(--accent); }
+  .size.disabled { color: #CCCCCC; cursor: not-allowed; text-decoration: line-through; }
+
+  .actions {
+    display: flex; gap: 8px; margin-top: 22px;
+  }
+  .btn-primary {
+    flex: 1;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 16px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    cursor: pointer;
+  }
+  .btn-primary:hover { opacity: 0.93; }
+  .btn-secondary {
+    background: white;
+    border: 1px solid var(--line);
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  .seller-row {
+    display: flex; align-items: center; gap: 12px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 18px 0;
+    margin-top: 28px;
+  }
+  .seller-row .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-2), #8F7355);
+  }
+  .seller-row .name { font-weight: 600; font-size: 14px; }
+  .seller-row .sub { font-size: 12px; color: var(--ink-muted); }
+
+  /* === DOBIERZ DO TEGO — the feature being tested === */
+  section.cross-sell {
+    background: white;
+    border-top: 1px solid var(--line);
+    padding: 56px 24px;
+    margin-top: 32px;
+  }
+  .feature-marker {
+    background: var(--accent-2);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-bottom: 14px;
+    display: inline-block;
+  }
+  section.cross-sell h2 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin: 4px 0 6px;
+  }
+  section.cross-sell .h2-sub {
+    color: var(--ink-muted);
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+  .strip {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+  }
+  .strip::-webkit-scrollbar { height: 6px; }
+  .strip::-webkit-scrollbar-thumb { background: var(--line); border-radius: 100px; }
+  .cs-card {
+    flex: 0 0 220px;
+    scroll-snap-align: start;
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .cs-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: transparent;
+  }
+  .cs-photo {
+    aspect-ratio: 1/1;
+    position: relative;
+  }
+  .cs-card:nth-child(1) .cs-photo { background: linear-gradient(135deg, #1F2940 0%, #3C4564 100%); }
+  .cs-card:nth-child(2) .cs-photo { background: linear-gradient(135deg, #D2A87C 0%, #B8956A 100%); }
+  .cs-card:nth-child(3) .cs-photo { background: linear-gradient(135deg, #A38068 0%, #6F523E 100%); }
+  .cs-card:nth-child(4) .cs-photo { background: linear-gradient(135deg, #D9D2C5 0%, #B5AB99 100%); }
+  .cs-card:nth-child(5) .cs-photo { background: linear-gradient(135deg, #4A5878 0%, #1F2940 100%); }
+  .cs-card .cs-photo .pill {
+    position: absolute; top: 10px; left: 10px;
+    background: white;
+    color: var(--ink);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 100px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .cs-card .cs-photo .add {
+    position: absolute; bottom: 10px; right: 10px;
+    background: white;
+    color: var(--ink);
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+  }
+  .cs-card .cs-photo .add:hover { background: var(--accent); color: white; }
+  .cs-meta {
+    padding: 14px;
+  }
+  .cs-meta .cat {
+    font-size: 11px;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .cs-meta .nm {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .cs-meta .pr {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .cs-meta .pr .old {
+    text-decoration: line-through;
+    color: var(--ink-muted);
+    font-weight: 400;
+    margin-left: 6px;
+    font-size: 12px;
+  }
+  .cs-meta .signal {
+    font-size: 11px;
+    color: var(--accent-2);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  /* "Inni kupili też" (a second cross-sell row, different framing) */
+  .sub-row { margin-top: 48px; }
+  .sub-row h3 { font-size: 16px; font-weight: 600; margin: 0 0 16px; }
+  .sub-row h3 .count {
+    color: var(--ink-muted);
+    font-weight: 400;
+    margin-left: 8px;
+    font-size: 13px;
+  }
+
+  /* cart bump notification */
+  #bump {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--ink);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .2s ease, transform .2s ease;
+    pointer-events: none;
+    z-index: 50;
+    max-width: 320px;
+  }
+  #bump.show { opacity: 1; transform: translateY(0); }
+  #bump strong { font-weight: 600; }
+
+  footer {
+    padding: 36px 24px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 64px;
+  }
+
+  /* mobile */
+  @media (max-width: 880px) {
+    .product { grid-template-columns: 1fr; gap: 24px; padding: 16px; }
+    nav.top .links { display: none; }
+    .gallery { grid-template-columns: 1fr 1fr; }
+    .info h1 { font-size: 26px; }
+    .info .price { font-size: 22px; }
+    section.cross-sell { padding: 40px 16px; }
+    section.cross-sell h2 { font-size: 22px; }
+    .cs-card { flex: 0 0 180px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="brand">FashionHero</div>
+  <div class="links">
+    <a href="#">Damska</a>
+    <a href="#">Buty</a>
+    <a href="#">Akcesoria</a>
+    <a href="#">Bielizna</a>
+    <a href="#">Wyprzedaż</a>
+  </div>
+  <div class="icons">
+    <span>🔍</span><span>❤</span><span>🛒</span>
+  </div>
+</nav>
+
+<div class="crumbs container">
+  <a href="#">Damska</a> · <a href="#">Sukienki</a> · <a href="#">Sukienki długie</a> · <span>Sukienka Maxi Boho</span>
+</div>
+
+<section class="product container">
+  <div class="gallery">
+    <div class="photo"><span class="label">Foto główne</span></div>
+    <div class="photo"><span class="label">Tył</span></div>
+    <div class="photo"><span class="label">Detal kroju</span></div>
+    <div class="photo"><span class="label">Na modelce 178cm</span></div>
+  </div>
+  <aside class="info">
+    <h1>Sukienka Maxi Boho z falbaną</h1>
+    <div class="designer">PrzezOkno · butik z Krakowa</div>
+    <div class="price">249,00 zł</div>
+    <div class="vat-note">Zawiera VAT · darmowy zwrot do 14 dni</div>
+
+    <div class="swatch-label">Kolor: <strong>Karmel</strong></div>
+    <div class="swatch">
+      <div class="dot selected" style="background:#B8956A"></div>
+      <div class="dot" style="background:#1F2940"></div>
+      <div class="dot" style="background:#7B5A3C"></div>
+      <div class="dot" style="background:#D9D2C5"></div>
+    </div>
+
+    <div class="swatch-label">Rozmiar:</div>
+    <div class="sizes">
+      <div class="size disabled">XS</div>
+      <div class="size">S</div>
+      <div class="size selected">M</div>
+      <div class="size">L</div>
+      <div class="size">XL</div>
+      <div class="size disabled">XXL</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" onclick="bump('Dodano <strong>Sukienka Maxi Boho · M</strong> do koszyka.')">DODAJ DO KOSZYKA</button>
+      <button class="btn-secondary" title="Do ulubionych">♡</button>
+    </div>
+
+    <div class="seller-row">
+      <div class="avatar"></div>
+      <div>
+        <div class="name">PrzezOkno</div>
+        <div class="sub">⭐ 4,8 · 1 240 opinii · 98% pozytywnych</div>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<!-- THE FEATURE BEING TESTED -->
+<section class="cross-sell">
+  <div class="container">
+    <span class="feature-marker">DOBIERZ DO TEGO · PROTOTYP</span>
+    <h2>Pasuje do tej sukienki</h2>
+    <p class="h2-sub">Stylizacja kompletna w jednym kliknięciu — dodaj do koszyka razem z sukienką.</p>
+
+    <div class="strip" id="strip-main">
+      <div class="cs-card" onclick="addCross(this, 'Skórzany pasek Indigo · S/M', '79 zł')">
+        <div class="cs-photo">
+          <span class="pill">SUPER MATCH</span>
+          <span class="add">+</span>
+        </div>
+        <div class="cs-meta">
+          <div class="cat">PASEK</div>
+          <div class="nm">Skórzany pasek Indigo · S/M</div>
+          <div class="pr">79 zł</div>
+          <div class="signal">↑ 73% kupujących sukienkę dobrało pasek</div>
+        </div>
+      </div>
+      <div class="cs-card" onclick="addCross(this, 'Sandały na obcasie Beż · 38', '189 zł')">
+        <div class="cs-photo">
+          <span class="pill">PASUJE</span>
+          <span class="add">+</span>
+        </div>
+        <div class="cs-meta">
+          <div class="cat">OBUWIE</div>
+          <div class="nm">Sandały na obcasie · Beż 38</div>
+          <div class="pr">189 zł <span class="old">219 zł</span></div>
+          <div class="signal">↑ Zgodne z paletą "Karmel"</div>
+        </div>
+      </div>
+      <div class="cs-card" onclick="addCross(this, 'Torba słomkowa duża', '129 zł')">
+        <div class="cs-photo">
+          <span class="pill">PASUJE</span>
+          <span class="add">+</span>
+        </div>
+        <div class="cs-meta">
+          <div class="cat">TORBA</div>
+          <div class="nm">Torba słomkowa Crete · duża</div>
+          <div class="pr">129 zł</div>
+          <div class="signal">↑ Trend „Coastal Grandma" 2026</div>
+        </div>
+      </div>
+      <div class="cs-card" onclick="addCross(this, 'Złota bransoletka łańcuszek', '69 zł')">
+        <div class="cs-photo">
+          <span class="pill">DODATEK</span>
+          <span class="add">+</span>
+        </div>
+        <div class="cs-meta">
+          <div class="cat">BIŻUTERIA</div>
+          <div class="nm">Bransoletka łańcuszek · złoto</div>
+          <div class="pr">69 zł</div>
+          <div class="signal">↑ Częsty zestaw z sukienkami Boho</div>
+        </div>
+      </div>
+      <div class="cs-card" onclick="addCross(this, 'Lekki kardigan kremowy · M', '139 zł')">
+        <div class="cs-photo">
+          <span class="pill">NA CHŁODNIEJSZE WIECZORY</span>
+          <span class="add">+</span>
+        </div>
+        <div class="cs-meta">
+          <div class="cat">KARDIGAN</div>
+          <div class="nm">Kardigan kremowy lekki · M</div>
+          <div class="pr">139 zł</div>
+          <div class="signal">↑ Pasuje do palety pastelowej</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-row">
+      <h3>Inni kupili też<span class="count">— 312 osób wzięło z tym ostatni miesiąc</span></h3>
+      <div class="strip">
+        <div class="cs-card" onclick="addCross(this, 'Kapelusz słomkowy szeroki', '95 zł')">
+          <div class="cs-photo" style="background: linear-gradient(135deg, #E1D6BF 0%, #B5A689 100%);">
+            <span class="add">+</span>
+          </div>
+          <div class="cs-meta">
+            <div class="cat">DODATKI</div>
+            <div class="nm">Kapelusz słomkowy szeroki</div>
+            <div class="pr">95 zł</div>
+          </div>
+        </div>
+        <div class="cs-card" onclick="addCross(this, 'Bielizna gładka cielista · M', '49 zł')">
+          <div class="cs-photo" style="background: linear-gradient(135deg, #D9C4A8 0%, #A88E6E 100%);">
+            <span class="add">+</span>
+          </div>
+          <div class="cs-meta">
+            <div class="cat">BIELIZNA</div>
+            <div class="nm">Bielizna gładka cielista · M</div>
+            <div class="pr">49 zł</div>
+          </div>
+        </div>
+        <div class="cs-card" onclick="addCross(this, 'Perfumy Petitgrain 30ml', '249 zł')">
+          <div class="cs-photo" style="background: linear-gradient(135deg, #6F4E37 0%, #3A2818 100%);">
+            <span class="add">+</span>
+          </div>
+          <div class="cs-meta">
+            <div class="cat">ZAPACH</div>
+            <div class="nm">Perfumy Petitgrain · 30ml</div>
+            <div class="pr">249 zł</div>
+          </div>
+        </div>
+        <div class="cs-card" onclick="addCross(this, 'Zegarek bransoletka mini', '349 zł')">
+          <div class="cs-photo" style="background: linear-gradient(135deg, #C9B79C 0%, #8F7355 100%);">
+            <span class="add">+</span>
+          </div>
+          <div class="cs-meta">
+            <div class="cat">ZEGAREK</div>
+            <div class="nm">Zegarek bransoletka mini</div>
+            <div class="pr">349 zł</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  FashionHero · prototyp Side Quest „Road Not Taken" / AI Product Heroes Q1.3 · porównanie z FashionHero Plus
+</footer>
+
+<div id="bump">Dodano do koszyka.</div>
+
+<script>
+  let cartCount = 0;
+  function bump(msg) {
+    cartCount++;
+    const el = document.getElementById('bump');
+    el.innerHTML = msg + (cartCount > 1 ? ' <span style="opacity:.7">(' + cartCount + ' rzeczy)</span>' : '');
+    el.classList.add('show');
+    clearTimeout(window.__t);
+    window.__t = setTimeout(() => el.classList.remove('show'), 2400);
+    // For smoke-test analytics later (Q4.1 PostHog Action target):
+    if (window.localStorage) {
+      try {
+        const log = JSON.parse(localStorage.getItem('crosssell_log') || '[]');
+        log.push({msg, at: new Date().toISOString()});
+        localStorage.setItem('crosssell_log', JSON.stringify(log));
+      } catch (err) {}
+    }
+  }
+  function addCross(el, name, price) {
+    bump('Dodano <strong>' + name + '</strong> · ' + price);
+    // Visual feedback on the card
+    const add = el.querySelector('.add');
+    if (add) {
+      add.textContent = '✓';
+      add.style.background = '#1F2940';
+      add.style.color = 'white';
+    }
+  }
+</script>
+
+</body>
+</html>
