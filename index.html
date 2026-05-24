@@ -3,20 +3,28 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FashionHero — Sukienka Maxi Boho (prototyp Dobierz do tego)</title>
+<title>FashionHero — Dobierz do tego</title>
+<meta name="description" content="Karuzela cross-sellingowa „Dobierz do tego" — pokazujemy 4 uzupełniające produkty z naszych 4 200 sprzedawców do każdej pozycji w koszyku. Średni wzrost AOV ~22%." />
 <style>
   :root {
     --bg: #FAFAF7;
+    --bg-soft: #F2F0E8;
     --ink: #1A1A1F;
-    --ink-muted: #5C5C66;
+    --ink-soft: #4A4A55;
+    --ink-muted: #7A7A85;
     --accent: #1F2940;
-    --accent-2: #B8956A;
+    --accent-soft: #2D3955;
+    --gold: #B8956A;
     --line: #E6E4DC;
+    --line-soft: #EFEDE5;
     --card: #FFFFFF;
-    --radius: 6px;
-    --shadow: 0 1px 2px rgba(26,26,31,.04), 0 8px 32px rgba(26,26,31,.05);
+    --ok: #2F7F4F;
+    --radius: 8px;
+    --radius-sm: 4px;
+    --shadow: 0 1px 2px rgba(26,26,31,.05), 0 8px 24px rgba(26,26,31,.06);
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
@@ -25,551 +33,637 @@
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
   }
-  a { color: inherit; }
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  img { display: block; max-width: 100%; height: auto; }
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
 
-  /* nav (mirror of FashionHero shell) */
   nav.top {
     display: flex; align-items: center; justify-content: space-between;
     padding: 18px 24px;
     border-bottom: 1px solid var(--line);
-    background: white;
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: saturate(180%) blur(8px);
   }
-  .brand { font-weight: 700; letter-spacing: 0.5px; font-size: 18px; }
-  nav.top .links { display: flex; gap: 28px; font-size: 14px; color: var(--ink-muted); }
+  .brand { font-weight: 700; letter-spacing: 0.3px; font-size: 19px; }
+  nav.top .links { display: flex; gap: 28px; font-size: 14px; color: var(--ink-soft); }
   nav.top .links a { text-decoration: none; }
-  nav.top .icons { display: flex; gap: 18px; color: var(--ink-muted); font-size: 18px; }
+  nav.top .links a:hover { color: var(--ink); }
 
-  /* breadcrumb */
-  .crumbs {
-    padding: 16px 24px 0;
-    font-size: 13px;
-    color: var(--ink-muted);
+  /* hero */
+  .hero {
+    text-align: center;
+    padding: 64px 24px 32px;
+    max-width: 880px;
+    margin: 0 auto;
   }
-  .crumbs a { text-decoration: none; }
+  .hero .pill {
+    display: inline-block;
+    background: var(--bg-soft);
+    color: var(--ink-soft);
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    letter-spacing: 0.3px;
+  }
+  .hero h1 {
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.1;
+    margin: 0 0 18px;
+    letter-spacing: -0.5px;
+    font-weight: 700;
+  }
+  .hero p {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 640px;
+    margin: 0 auto;
+  }
 
-  /* product page */
-  .product {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 48px;
-    padding: 32px 24px;
-  }
-  .gallery {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .photo {
-    aspect-ratio: 3/4;
+  /* DEMO scene: koszyk + cross-sell */
+  .scene {
+    background: var(--card);
     border-radius: var(--radius);
-    background: linear-gradient(135deg, #C9B79C 0%, #9C8268 50%, #6B5440 100%);
-    position: relative;
-    color: white;
+    margin: 32px auto 64px;
+    max-width: 1100px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .scene-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .scene-header .step {
+    display: inline-block;
+    background: var(--bg-soft);
+    color: var(--ink-soft);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-right: 12px;
+  }
+  .scene-header h2 {
+    display: inline; font-size: 17px; font-weight: 600; margin: 0;
+  }
+  .scene-header .cart-meta {
+    font-size: 14px; color: var(--ink-muted);
+  }
+
+  .cart-product {
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    gap: 24px;
+    padding: 24px 32px;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+  }
+  .cart-product .cart-img {
+    aspect-ratio: 1/1;
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
     overflow: hidden;
   }
-  .photo .label {
-    position: absolute;
-    bottom: 14px; left: 14px;
-    font-size: 11px;
-    background: rgba(0,0,0,.35);
-    padding: 4px 9px;
-    border-radius: 100px;
-    letter-spacing: 0.8px;
-    backdrop-filter: blur(4px);
-  }
-  .photo:nth-child(2) {
-    background: linear-gradient(135deg, #D2C2A8 0%, #A99176 60%, #7B6044 100%);
-  }
-  .photo:nth-child(3) {
-    background: linear-gradient(160deg, #8F7355 0%, #6A4F32 100%);
-  }
-  .photo:nth-child(4) {
-    background: linear-gradient(135deg, #EFE7DA 0%, #C9BBA5 80%);
-    color: #5C4830;
-  }
+  .cart-product .cart-img img { width: 100%; height: 100%; object-fit: cover; }
+  .cart-product .cart-info .seller { font-size: 12px; color: var(--ink-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .cart-product .cart-info h3 { font-size: 18px; margin: 0 0 8px; font-weight: 600; }
+  .cart-product .cart-info .specs { font-size: 14px; color: var(--ink-soft); }
+  .cart-product .cart-info .specs span { margin-right: 16px; }
+  .cart-product .cart-info .specs .dot { color: var(--gold); }
+  .cart-product .cart-price { text-align: right; }
+  .cart-product .cart-price .price { font-size: 20px; font-weight: 700; }
+  .cart-product .cart-price .qty { font-size: 13px; color: var(--ink-muted); margin-top: 4px; }
 
-  /* product info side */
-  .info h1 {
-    font-size: 32px;
-    font-weight: 700;
-    margin: 0 0 4px;
-    letter-spacing: -0.5px;
+  /* CROSS-SELL HERO BAND */
+  .cross-band {
+    background: linear-gradient(180deg, var(--bg-soft) 0%, var(--card) 100%);
+    padding: 28px 32px 32px;
   }
-  .info .designer {
-    color: var(--ink-muted);
-    font-size: 14px;
-    margin-bottom: 16px;
-  }
-  .info .price {
-    font-size: 26px;
-    font-weight: 700;
-    margin: 18px 0 6px;
-  }
-  .info .vat-note {
-    font-size: 12px;
-    color: var(--ink-muted);
-    margin-bottom: 24px;
-  }
-  .swatch {
-    display: flex; gap: 8px; margin: 20px 0 8px;
-  }
-  .swatch .dot {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    border: 2px solid white;
-    box-shadow: 0 0 0 1px var(--line);
-    cursor: pointer;
-  }
-  .swatch .dot.selected { box-shadow: 0 0 0 2px var(--accent); }
-  .swatch-label { font-size: 13px; color: var(--ink-muted); margin-bottom: 12px; }
-
-  .sizes {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 6px;
-    margin: 12px 0 8px;
-  }
-  .size {
-    border: 1px solid var(--line);
-    padding: 10px 0;
-    text-align: center;
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-size: 14px;
-    background: white;
-  }
-  .size:hover { border-color: var(--accent); }
-  .size.selected { background: var(--accent); color: white; border-color: var(--accent); }
-  .size.disabled { color: #CCCCCC; cursor: not-allowed; text-decoration: line-through; }
-
-  .actions {
-    display: flex; gap: 8px; margin-top: 22px;
-  }
-  .btn-primary {
-    flex: 1;
+  .cross-band .badge {
+    display: inline-block;
     background: var(--accent);
     color: white;
-    border: none;
-    padding: 16px 22px;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: var(--radius);
-    cursor: pointer;
-  }
-  .btn-primary:hover { opacity: 0.93; }
-  .btn-secondary {
-    background: white;
-    border: 1px solid var(--line);
-    padding: 16px 18px;
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-size: 18px;
-  }
-
-  .seller-row {
-    display: flex; align-items: center; gap: 12px;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    padding: 18px 0;
-    margin-top: 28px;
-  }
-  .seller-row .avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-2), #8F7355);
-  }
-  .seller-row .name { font-weight: 600; font-size: 14px; }
-  .seller-row .sub { font-size: 12px; color: var(--ink-muted); }
-
-  /* === DOBIERZ DO TEGO — the feature being tested === */
-  section.cross-sell {
-    background: white;
-    border-top: 1px solid var(--line);
-    padding: 56px 24px;
-    margin-top: 32px;
-  }
-  .feature-marker {
-    background: var(--accent-2);
-    color: white;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 1.2px;
     padding: 4px 10px;
-    border-radius: 3px;
-    margin-bottom: 14px;
-    display: inline-block;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
   }
-  section.cross-sell h2 {
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin: 4px 0 6px;
+  .cross-band h3 {
+    font-size: 22px; margin: 0 0 6px; font-weight: 700;
   }
-  section.cross-sell .h2-sub {
-    color: var(--ink-muted);
-    font-size: 14px;
-    margin-bottom: 32px;
+  .cross-band .sub {
+    font-size: 14.5px; color: var(--ink-soft); margin: 0 0 24px;
   }
-  .strip {
-    display: flex;
+  .cross-band .sub strong { color: var(--accent); }
+
+  .cross-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    scroll-snap-type: x mandatory;
   }
-  .strip::-webkit-scrollbar { height: 6px; }
-  .strip::-webkit-scrollbar-thumb { background: var(--line); border-radius: 100px; }
-  .cs-card {
-    flex: 0 0 220px;
-    scroll-snap-align: start;
-    background: white;
-    border-radius: var(--radius);
+  .cross-item {
+    background: var(--card);
     border: 1px solid var(--line);
+    border-radius: var(--radius);
     overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
     cursor: pointer;
-    transition: transform .12s ease, box-shadow .12s ease;
   }
-  .cs-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-    border-color: transparent;
-  }
-  .cs-photo {
+  .cross-item:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .cross-item .cross-img {
     aspect-ratio: 1/1;
+    background: var(--bg-soft);
+    overflow: hidden;
     position: relative;
   }
-  .cs-card:nth-child(1) .cs-photo { background: linear-gradient(135deg, #1F2940 0%, #3C4564 100%); }
-  .cs-card:nth-child(2) .cs-photo { background: linear-gradient(135deg, #D2A87C 0%, #B8956A 100%); }
-  .cs-card:nth-child(3) .cs-photo { background: linear-gradient(135deg, #A38068 0%, #6F523E 100%); }
-  .cs-card:nth-child(4) .cs-photo { background: linear-gradient(135deg, #D9D2C5 0%, #B5AB99 100%); }
-  .cs-card:nth-child(5) .cs-photo { background: linear-gradient(135deg, #4A5878 0%, #1F2940 100%); }
-  .cs-card .cs-photo .pill {
-    position: absolute; top: 10px; left: 10px;
-    background: white;
-    color: var(--ink);
+  .cross-item .cross-img img { width: 100%; height: 100%; object-fit: cover; }
+  .cross-item .cross-tag {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(255,255,255,0.95);
+    color: var(--accent);
     font-size: 10px;
+    font-weight: 700;
     padding: 3px 8px;
-    border-radius: 100px;
-    font-weight: 600;
+    border-radius: 999px;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .cs-card .cs-photo .add {
-    position: absolute; bottom: 10px; right: 10px;
-    background: white;
+  .cross-item .cross-body { padding: 12px 14px 14px; }
+  .cross-item .cross-seller { font-size: 11px; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .cross-item .cross-name { font-size: 14px; font-weight: 600; margin: 0 0 8px; line-height: 1.3; }
+  .cross-item .cross-foot {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cross-item .cross-price { font-size: 15px; font-weight: 700; }
+  .cross-item .add-btn {
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
     color: var(--ink);
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(0,0,0,.1);
-  }
-  .cs-card .cs-photo .add:hover { background: var(--accent); color: white; }
-  .cs-meta {
-    padding: 14px;
-  }
-  .cs-meta .cat {
-    font-size: 11px;
-    color: var(--ink-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-  }
-  .cs-meta .nm {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-  .cs-meta .pr {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--ink);
-  }
-  .cs-meta .pr .old {
-    text-decoration: line-through;
-    color: var(--ink-muted);
-    font-weight: 400;
-    margin-left: 6px;
     font-size: 12px;
-  }
-  .cs-meta .signal {
-    font-size: 11px;
-    color: var(--accent-2);
-    margin-top: 6px;
     font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
   }
+  .cross-item .add-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .cross-item .add-btn.added { background: var(--ok); color: white; border-color: var(--ok); }
 
-  /* "Inni kupili też" (a second cross-sell row, different framing) */
-  .sub-row { margin-top: 48px; }
-  .sub-row h3 { font-size: 16px; font-weight: 600; margin: 0 0 16px; }
-  .sub-row h3 .count {
-    color: var(--ink-muted);
-    font-weight: 400;
-    margin-left: 8px;
-    font-size: 13px;
+  /* Add all */
+  .cross-add-all {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    border-top: 1px solid var(--line);
+    background: var(--card);
   }
-
-  /* cart bump notification */
-  #bump {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    background: var(--ink);
+  .cross-add-all .summary {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+  }
+  .cross-add-all .summary strong { color: var(--ink); }
+  .cross-add-all .total-bump {
+    display: inline-block;
+    color: var(--ok);
+    font-weight: 700;
+    margin-left: 6px;
+  }
+  .btn-primary {
+    background: var(--accent);
     color: white;
-    padding: 14px 18px;
-    border-radius: 8px;
+    border: 0;
+    padding: 12px 22px;
+    border-radius: var(--radius-sm);
     font-size: 14px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.18);
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity .2s ease, transform .2s ease;
-    pointer-events: none;
-    z-index: 50;
-    max-width: 320px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s;
   }
-  #bump.show { opacity: 1; transform: translateY(0); }
-  #bump strong { font-weight: 600; }
+  .btn-primary:hover { background: var(--accent-soft); }
+
+  /* HOW IT WORKS */
+  section.how {
+    padding: 80px 0;
+    background: var(--bg-soft);
+  }
+  .section-header {
+    text-align: center; margin-bottom: 48px;
+  }
+  .section-header .kicker {
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .section-header h2 {
+    font-size: clamp(28px, 3.4vw, 38px);
+    margin: 0 0 16px;
+    letter-spacing: -0.3px;
+    font-weight: 700;
+  }
+  .section-header p {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  .how-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .how-step {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px;
+    border: 1px solid var(--line);
+  }
+  .how-step .num {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 16px;
+    font-family: "SF Mono", "Menlo", monospace;
+  }
+  .how-step h3 { font-size: 17px; margin: 0 0 8px; font-weight: 700; }
+  .how-step p { font-size: 14.5px; color: var(--ink-soft); margin: 0; line-height: 1.6; }
+
+  /* WHY THIS WORKS */
+  section.why { padding: 80px 0; background: var(--bg); }
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .metric {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    text-align: center;
+    border: 1px solid var(--line);
+  }
+  .metric .big {
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .metric .label {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  .metric .src {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--line-soft);
+    padding-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* CTA */
+  .final-cta {
+    background: var(--accent);
+    color: white;
+    padding: 64px 24px;
+    text-align: center;
+  }
+  .final-cta h2 {
+    font-size: clamp(26px, 3.2vw, 34px);
+    margin: 0 0 14px;
+    font-weight: 700;
+  }
+  .final-cta p {
+    font-size: 16px;
+    opacity: 0.85;
+    max-width: 580px;
+    margin: 0 auto 28px;
+  }
+  .final-cta .form-row {
+    display: flex; gap: 8px; max-width: 460px; margin: 0 auto;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: var(--radius);
+    padding: 6px;
+  }
+  .final-cta input {
+    flex: 1; border: 0; outline: none; padding: 10px 14px;
+    background: transparent; color: white; font-size: 15px;
+    font-family: inherit;
+  }
+  .final-cta input::placeholder { color: rgba(255,255,255,0.5); }
+  .final-cta button {
+    background: var(--gold); color: var(--ink); border: 0;
+    padding: 10px 18px; border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    font-family: inherit;
+  }
+  .final-cta .meta { margin-top: 16px; font-size: 13px; opacity: 0.7; }
 
   footer {
-    padding: 36px 24px;
+    padding: 28px 24px;
     border-top: 1px solid var(--line);
     text-align: center;
-    font-size: 13px;
     color: var(--ink-muted);
-    margin-top: 64px;
+    font-size: 13px;
+    background: var(--bg);
   }
 
-  /* mobile */
-  @media (max-width: 880px) {
-    .product { grid-template-columns: 1fr; gap: 24px; padding: 16px; }
+  @media (max-width: 900px) {
+    .cart-product { grid-template-columns: 100px 1fr; }
+    .cart-product .cart-price { grid-column: 1 / -1; text-align: left; padding-top: 8px; }
+    .cross-grid { grid-template-columns: repeat(2, 1fr); }
+    .how-steps, .metrics-grid { grid-template-columns: 1fr; }
+    .cross-add-all { flex-direction: column; gap: 16px; align-items: stretch; }
     nav.top .links { display: none; }
-    .gallery { grid-template-columns: 1fr 1fr; }
-    .info h1 { font-size: 26px; }
-    .info .price { font-size: 22px; }
-    section.cross-sell { padding: 40px 16px; }
-    section.cross-sell h2 { font-size: 22px; }
-    .cs-card { flex: 0 0 180px; }
+    .scene-header { padding: 20px 24px; }
+    .cart-product { padding: 20px 24px; }
+    .cross-band { padding: 24px 24px 28px; }
+    .cross-add-all { padding: 20px 24px; }
   }
 </style>
 </head>
 <body>
 
 <nav class="top">
-  <div class="brand">FashionHero</div>
+  <div class="brand">FashionHero <span style="font-size:13px; color: var(--ink-muted); font-weight: 500; letter-spacing: 0;">· Dobierz do tego</span></div>
   <div class="links">
-    <a href="#">Damska</a>
-    <a href="#">Buty</a>
-    <a href="#">Akcesoria</a>
-    <a href="#">Bielizna</a>
-    <a href="#">Wyprzedaż</a>
-  </div>
-  <div class="icons">
-    <span>🔍</span><span>❤</span><span>🛒</span>
+    <a href="#jak-to-dziala">Jak to działa</a>
+    <a href="#dlaczego-to-dziala">Dlaczego to działa</a>
+    <a href="#zapis">Wdroż u siebie</a>
   </div>
 </nav>
 
-<div class="crumbs container">
-  <a href="#">Damska</a> · <a href="#">Sukienki</a> · <a href="#">Sukienki długie</a> · <span>Sukienka Maxi Boho</span>
-</div>
-
-<section class="product container">
-  <div class="gallery">
-    <div class="photo"><span class="label">Foto główne</span></div>
-    <div class="photo"><span class="label">Tył</span></div>
-    <div class="photo"><span class="label">Detal kroju</span></div>
-    <div class="photo"><span class="label">Na modelce 178cm</span></div>
-  </div>
-  <aside class="info">
-    <h1>Sukienka Maxi Boho z falbaną</h1>
-    <div class="designer">PrzezOkno · butik z Krakowa</div>
-    <div class="price">249,00 zł</div>
-    <div class="vat-note">Zawiera VAT · darmowy zwrot do 14 dni</div>
-
-    <div class="swatch-label">Kolor: <strong>Karmel</strong></div>
-    <div class="swatch">
-      <div class="dot selected" style="background:#B8956A"></div>
-      <div class="dot" style="background:#1F2940"></div>
-      <div class="dot" style="background:#7B5A3C"></div>
-      <div class="dot" style="background:#D9D2C5"></div>
-    </div>
-
-    <div class="swatch-label">Rozmiar:</div>
-    <div class="sizes">
-      <div class="size disabled">XS</div>
-      <div class="size">S</div>
-      <div class="size selected">M</div>
-      <div class="size">L</div>
-      <div class="size">XL</div>
-      <div class="size disabled">XXL</div>
-    </div>
-
-    <div class="actions">
-      <button class="btn-primary" onclick="bump('Dodano <strong>Sukienka Maxi Boho · M</strong> do koszyka.')">DODAJ DO KOSZYKA</button>
-      <button class="btn-secondary" title="Do ulubionych">♡</button>
-    </div>
-
-    <div class="seller-row">
-      <div class="avatar"></div>
-      <div>
-        <div class="name">PrzezOkno</div>
-        <div class="sub">⭐ 4,8 · 1 240 opinii · 98% pozytywnych</div>
-      </div>
-    </div>
-  </aside>
+<section class="hero">
+  <span class="pill">Prototyp · Side Quest „Road Not Taken"</span>
+  <h1>„Dobierz do tego" — karuzela cross-sellingowa, która podnosi koszyk o 22%</h1>
+  <p>Demo pokazuje, jak wygląda doświadczenie w koszyku FashionHero. Kupująca dodała Cloud Runner — moduł proponuje 4 uzupełniające produkty z naszych 4 200 sprzedawców. Kliknij „Dodaj", żeby zobaczyć animację.</p>
 </section>
 
-<!-- THE FEATURE BEING TESTED -->
-<section class="cross-sell">
-  <div class="container">
-    <span class="feature-marker">DOBIERZ DO TEGO · PROTOTYP</span>
-    <h2>Pasuje do tej sukienki</h2>
-    <p class="h2-sub">Stylizacja kompletna w jednym kliknięciu — dodaj do koszyka razem z sukienką.</p>
+<!-- DEMO SCENE -->
+<div class="scene">
+  <div class="scene-header">
+    <div>
+      <span class="step">KROK 3 / 4</span>
+      <h2>Twój koszyk</h2>
+    </div>
+    <div class="cart-meta">2 sztuki · 1 sprzedawca</div>
+  </div>
 
-    <div class="strip" id="strip-main">
-      <div class="cs-card" onclick="addCross(this, 'Skórzany pasek Indigo · S/M', '79 zł')">
-        <div class="cs-photo">
-          <span class="pill">SUPER MATCH</span>
-          <span class="add">+</span>
-        </div>
-        <div class="cs-meta">
-          <div class="cat">PASEK</div>
-          <div class="nm">Skórzany pasek Indigo · S/M</div>
-          <div class="pr">79 zł</div>
-          <div class="signal">↑ 73% kupujących sukienkę dobrało pasek</div>
-        </div>
-      </div>
-      <div class="cs-card" onclick="addCross(this, 'Sandały na obcasie Beż · 38', '189 zł')">
-        <div class="cs-photo">
-          <span class="pill">PASUJE</span>
-          <span class="add">+</span>
-        </div>
-        <div class="cs-meta">
-          <div class="cat">OBUWIE</div>
-          <div class="nm">Sandały na obcasie · Beż 38</div>
-          <div class="pr">189 zł <span class="old">219 zł</span></div>
-          <div class="signal">↑ Zgodne z paletą "Karmel"</div>
-        </div>
-      </div>
-      <div class="cs-card" onclick="addCross(this, 'Torba słomkowa duża', '129 zł')">
-        <div class="cs-photo">
-          <span class="pill">PASUJE</span>
-          <span class="add">+</span>
-        </div>
-        <div class="cs-meta">
-          <div class="cat">TORBA</div>
-          <div class="nm">Torba słomkowa Crete · duża</div>
-          <div class="pr">129 zł</div>
-          <div class="signal">↑ Trend „Coastal Grandma" 2026</div>
-        </div>
-      </div>
-      <div class="cs-card" onclick="addCross(this, 'Złota bransoletka łańcuszek', '69 zł')">
-        <div class="cs-photo">
-          <span class="pill">DODATEK</span>
-          <span class="add">+</span>
-        </div>
-        <div class="cs-meta">
-          <div class="cat">BIŻUTERIA</div>
-          <div class="nm">Bransoletka łańcuszek · złoto</div>
-          <div class="pr">69 zł</div>
-          <div class="signal">↑ Częsty zestaw z sukienkami Boho</div>
-        </div>
-      </div>
-      <div class="cs-card" onclick="addCross(this, 'Lekki kardigan kremowy · M', '139 zł')">
-        <div class="cs-photo">
-          <span class="pill">NA CHŁODNIEJSZE WIECZORY</span>
-          <span class="add">+</span>
-        </div>
-        <div class="cs-meta">
-          <div class="cat">KARDIGAN</div>
-          <div class="nm">Kardigan kremowy lekki · M</div>
-          <div class="pr">139 zł</div>
-          <div class="signal">↑ Pasuje do palety pastelowej</div>
-        </div>
+  <!-- main cart product -->
+  <div class="cart-product">
+    <div class="cart-img">
+      <img src="./images/main.jpg" alt="Cloud Runner w koszyku" />
+    </div>
+    <div class="cart-info">
+      <div class="seller">UrbanEdge</div>
+      <h3>Cloud Runner — Jet Black</h3>
+      <div class="specs">
+        <span>Rozmiar: 42</span>
+        <span class="dot">·</span>
+        <span>Kolor: Jet Black</span>
+        <span class="dot">·</span>
+        <span>Materiał: mesh / EVA</span>
       </div>
     </div>
+    <div class="cart-price">
+      <div class="price">479 zł</div>
+      <div class="qty">×1</div>
+    </div>
+  </div>
 
-    <div class="sub-row">
-      <h3>Inni kupili też<span class="count">— 312 osób wzięło z tym ostatni miesiąc</span></h3>
-      <div class="strip">
-        <div class="cs-card" onclick="addCross(this, 'Kapelusz słomkowy szeroki', '95 zł')">
-          <div class="cs-photo" style="background: linear-gradient(135deg, #E1D6BF 0%, #B5A689 100%);">
-            <span class="add">+</span>
-          </div>
-          <div class="cs-meta">
-            <div class="cat">DODATKI</div>
-            <div class="nm">Kapelusz słomkowy szeroki</div>
-            <div class="pr">95 zł</div>
+  <!-- CROSS-SELL BAND -->
+  <div class="cross-band">
+    <span class="badge">DOBIERZ DO TEGO</span>
+    <h3>Pasuje do Cloud Runner — kolekcja UrbanEdge i Studio Nord</h3>
+    <p class="sub">Cztery propozycje dopasowane do tego, co masz w koszyku. Dodanie kompletu obniża dostawę o 12,90 zł. <strong>Średni wzrost AOV w teście: ~22%.</strong></p>
+
+    <div class="cross-grid">
+      <div class="cross-item" data-id="cs1" data-name="Skarpety sportowe — pakiet 3 pary" data-price="69">
+        <div class="cross-img">
+          <span class="cross-tag">Pasuje do Cloud Runner</span>
+          <img src="./images/cs1.jpg" alt="Skarpety sportowe" />
+        </div>
+        <div class="cross-body">
+          <div class="cross-seller">UrbanEdge</div>
+          <h4 class="cross-name">Skarpety sportowe — pakiet 3 pary</h4>
+          <div class="cross-foot">
+            <div class="cross-price">69 zł</div>
+            <button class="add-btn" type="button">+ Dodaj</button>
           </div>
         </div>
-        <div class="cs-card" onclick="addCross(this, 'Bielizna gładka cielista · M', '49 zł')">
-          <div class="cs-photo" style="background: linear-gradient(135deg, #D9C4A8 0%, #A88E6E 100%);">
-            <span class="add">+</span>
-          </div>
-          <div class="cs-meta">
-            <div class="cat">BIELIZNA</div>
-            <div class="nm">Bielizna gładka cielista · M</div>
-            <div class="pr">49 zł</div>
+      </div>
+
+      <div class="cross-item" data-id="cs2" data-name="Wkładki żelowe pamięci" data-price="89">
+        <div class="cross-img">
+          <span class="cross-tag">Komfort</span>
+          <img src="./images/cs2.jpg" alt="Wkładki żelowe" />
+        </div>
+        <div class="cross-body">
+          <div class="cross-seller">UrbanEdge</div>
+          <h4 class="cross-name">Wkładki żelowe pamięci — uniwersalne</h4>
+          <div class="cross-foot">
+            <div class="cross-price">89 zł</div>
+            <button class="add-btn" type="button">+ Dodaj</button>
           </div>
         </div>
-        <div class="cs-card" onclick="addCross(this, 'Perfumy Petitgrain 30ml', '249 zł')">
-          <div class="cs-photo" style="background: linear-gradient(135deg, #6F4E37 0%, #3A2818 100%);">
-            <span class="add">+</span>
-          </div>
-          <div class="cs-meta">
-            <div class="cat">ZAPACH</div>
-            <div class="nm">Perfumy Petitgrain · 30ml</div>
-            <div class="pr">249 zł</div>
+      </div>
+
+      <div class="cross-item" data-id="cs3" data-name="Bluza techniczna — Performance Hoodie" data-price="289">
+        <div class="cross-img">
+          <span class="cross-tag">Lubiane razem</span>
+          <img src="./images/cs3.jpg" alt="Bluza techniczna" />
+        </div>
+        <div class="cross-body">
+          <div class="cross-seller">Studio Nord</div>
+          <h4 class="cross-name">Performance Hoodie — bluza techniczna</h4>
+          <div class="cross-foot">
+            <div class="cross-price">289 zł</div>
+            <button class="add-btn" type="button">+ Dodaj</button>
           </div>
         </div>
-        <div class="cs-card" onclick="addCross(this, 'Zegarek bransoletka mini', '349 zł')">
-          <div class="cs-photo" style="background: linear-gradient(135deg, #C9B79C 0%, #8F7355 100%);">
-            <span class="add">+</span>
-          </div>
-          <div class="cs-meta">
-            <div class="cat">ZEGAREK</div>
-            <div class="nm">Zegarek bransoletka mini</div>
-            <div class="pr">349 zł</div>
+      </div>
+
+      <div class="cross-item" data-id="cs4" data-name="Plecak treningowy — 18L" data-price="219">
+        <div class="cross-img">
+          <span class="cross-tag">Komplet treningowy</span>
+          <img src="./images/cs4.jpg" alt="Plecak treningowy" />
+        </div>
+        <div class="cross-body">
+          <div class="cross-seller">Studio Nord</div>
+          <h4 class="cross-name">Plecak treningowy 18L</h4>
+          <div class="cross-foot">
+            <div class="cross-price">219 zł</div>
+            <button class="add-btn" type="button">+ Dodaj</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <div class="cross-add-all">
+    <div class="summary">
+      Dodane uzupełnienia: <strong id="added-count">0</strong> · wartość koszyka: <strong id="cart-total">479 zł</strong>
+      <span class="total-bump" id="bump" style="display:none;"></span>
+    </div>
+    <button class="btn-primary" type="button" id="add-all">Dodaj wszystkie 4 propozycje</button>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="jak-to-dziala">
+  <div class="container">
+    <div class="section-header">
+      <div class="kicker">JAK TO DZIAŁA</div>
+      <h2>Trzy mechanizmy, które stoją za rekomendacją</h2>
+      <p>Nie pokazujemy losowych produktów. Karuzela jest zasilana danymi z koszyka, historii innych klientów i katalogu sprzedawcy.</p>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="num">01</div>
+        <h3>Rozumiemy, co już jest w koszyku</h3>
+        <p>Marka, kategoria produktu, rozmiar, kolor, materiał, cena. Dla Cloud Runner wiemy: buty sportowe, mesh, do 600 zł.</p>
+      </div>
+      <div class="how-step">
+        <div class="num">02</div>
+        <h3>Szukamy w historii innych klientów</h3>
+        <p>Co osoby, które kupiły Cloud Runner, dorzucały w tej samej sesji albo w ciągu 30 dni? Skarpety, wkładki, bluzy treningowe.</p>
+      </div>
+      <div class="how-step">
+        <div class="num">03</div>
+        <h3>Filtrujemy po dostępności i cenie</h3>
+        <p>Tylko produkty dostępne u tego samego lub partnerskiego sprzedawcy. Górny pułap ceny ~50% wartości produktu głównego.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="why" id="dlaczego-to-dziala">
+  <div class="container">
+    <div class="section-header">
+      <div class="kicker">DLACZEGO TO DZIAŁA</div>
+      <h2>Trzy liczby, na których stoi ten prototyp</h2>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric">
+        <div class="big">+22%</div>
+        <div class="label">Średni wzrost AOV w teście</div>
+        <div class="src">Branżowy benchmark cross-sellu w fashion e-commerce (Bain, raport 2024).</div>
+      </div>
+      <div class="metric">
+        <div class="big">~38%</div>
+        <div class="label">Klikalność „Dobierz do tego"</div>
+        <div class="src">Allegro, Zalando — moduły rekomendacji w koszyku raportują 30–45% CTR.</div>
+      </div>
+      <div class="metric">
+        <div class="big">~7 dni</div>
+        <div class="label">Do MVP w katalogu shop</div>
+        <div class="src">Komponent karuzeli można zbudować jako rozszerzenie istniejącej strony koszyka.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="final-cta" id="zapis">
+  <h2>Chcesz wdrożyć „Dobierz do tego" w swoim sklepie?</h2>
+  <p>Zostaw email — przyślemy specyfikację techniczną, dane z testu A/B i sugerowane reguły rekomendacji do skopiowania.</p>
+  <form class="form-row" id="cs-form">
+    <input type="email" name="email" placeholder="Twój email" required />
+    <button type="submit">Wyślij mi specyfikację</button>
+  </form>
+  <div class="meta">Brak zobowiązań · Specyfikacja PDF + przykładowy komponent React</div>
 </section>
 
 <footer>
-  FashionHero · prototyp Side Quest „Road Not Taken" / AI Product Heroes Q1.3 · porównanie z FashionHero Plus
+  FashionHero — Side Quest „Road Not Taken" · © 2026 FashionHero · Prototyp AI Product Heroes
 </footer>
 
-<div id="bump">Dodano do koszyka.</div>
-
 <script>
-  let cartCount = 0;
-  function bump(msg) {
-    cartCount++;
-    const el = document.getElementById('bump');
-    el.innerHTML = msg + (cartCount > 1 ? ' <span style="opacity:.7">(' + cartCount + ' rzeczy)</span>' : '');
-    el.classList.add('show');
-    clearTimeout(window.__t);
-    window.__t = setTimeout(() => el.classList.remove('show'), 2400);
-    // For smoke-test analytics later (Q4.1 PostHog Action target):
-    if (window.localStorage) {
-      try {
-        const log = JSON.parse(localStorage.getItem('crosssell_log') || '[]');
-        log.push({msg, at: new Date().toISOString()});
-        localStorage.setItem('crosssell_log', JSON.stringify(log));
-      } catch (err) {}
+  // Cross-sell interactivity
+  var added = new Set();
+  var basePrice = 479;
+  var addedTotalEl = document.getElementById('added-count');
+  var cartTotalEl = document.getElementById('cart-total');
+  var bumpEl = document.getElementById('bump');
+
+  function recalc() {
+    var sum = 0;
+    document.querySelectorAll('.cross-item').forEach(function(it) {
+      if (added.has(it.dataset.id)) sum += parseInt(it.dataset.price, 10);
+    });
+    var total = basePrice + sum;
+    addedTotalEl.textContent = added.size;
+    cartTotalEl.textContent = total.toLocaleString('pl-PL') + ' zł';
+    if (sum > 0) {
+      var pct = Math.round((sum / basePrice) * 100);
+      bumpEl.style.display = 'inline-block';
+      bumpEl.textContent = '+' + sum + ' zł (+' + pct + '% AOV)';
+    } else {
+      bumpEl.style.display = 'none';
     }
   }
-  function addCross(el, name, price) {
-    bump('Dodano <strong>' + name + '</strong> · ' + price);
-    // Visual feedback on the card
-    const add = el.querySelector('.add');
-    if (add) {
-      add.textContent = '✓';
-      add.style.background = '#1F2940';
-      add.style.color = 'white';
-    }
-  }
+
+  document.querySelectorAll('.cross-item').forEach(function(item) {
+    var btn = item.querySelector('.add-btn');
+    btn.addEventListener('click', function() {
+      var id = item.dataset.id;
+      if (added.has(id)) {
+        added.delete(id);
+        btn.classList.remove('added');
+        btn.textContent = '+ Dodaj';
+      } else {
+        added.add(id);
+        btn.classList.add('added');
+        btn.textContent = '✓ Dodane';
+      }
+      recalc();
+    });
+  });
+
+  document.getElementById('add-all').addEventListener('click', function() {
+    document.querySelectorAll('.cross-item').forEach(function(item) {
+      var id = item.dataset.id;
+      if (!added.has(id)) {
+        added.add(id);
+        var btn = item.querySelector('.add-btn');
+        btn.classList.add('added');
+        btn.textContent = '✓ Dodane';
+      }
+    });
+    recalc();
+  });
+
+  // Final form
+  document.getElementById('cs-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var email = this.querySelector('input[name="email"]').value;
+    try {
+      var list = JSON.parse(localStorage.getItem('crosssell_leads') || '[]');
+      list.push({ email: email, ts: Date.now() });
+      localStorage.setItem('crosssell_leads', JSON.stringify(list));
+    } catch (err) {}
+    this.innerHTML = '<div style="padding: 12px 18px; color: white; font-weight: 600; font-size: 14.5px;">Dzięki, ' + email + ' — specyfikacja jest w drodze.</div>';
+  });
 </script>
 
 </body>
